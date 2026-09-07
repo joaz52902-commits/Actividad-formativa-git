@@ -1,10 +1,14 @@
 import os
-
+from producto import Producto
 
 def cargar_productos(ruta: str) -> list:
     productos = []
+    with open(ruta, "r") as file:
+        for line in file:
+            line = line.strip().split(",")
+            product = Producto(line[0], int(line[1]), int(line[2]))
+            productos.append(product)
     return productos
-
 
 def simular_ventas(productos: list) -> None:
     for producto in productos:
