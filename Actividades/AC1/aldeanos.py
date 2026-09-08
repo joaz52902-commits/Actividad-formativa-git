@@ -3,11 +3,6 @@ from regalo import Regalo
 
 
 class Cyrano(Cascarrabias):
-    """
-    Aldeano cascarrabias.
-    ESTE ES EL EJEMPLO RESUELTO: usalo como modelo para los demas
-    """
-
     def __init__(self) -> None:
         """
         Llama a super init para inicializar la clase padre
