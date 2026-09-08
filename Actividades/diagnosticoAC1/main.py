@@ -1,5 +1,5 @@
 import os
-from producto import Producto
+from clases import Producto
 
 def cargar_productos(ruta: str) -> list:
     productos = []

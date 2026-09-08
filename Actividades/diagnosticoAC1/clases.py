@@ -17,3 +17,4 @@ class Producto:
         else:
             print(f"No queda stock de <{self.nombre}>")
 
+
