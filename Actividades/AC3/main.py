@@ -23,6 +23,7 @@ def simular_nuevo_vehiculo():
     """
     Crea un nuevo vehiculo random
     """
+    pass
     return (
         randint(0, 49),
         choice(MARCAS),
@@ -30,7 +31,9 @@ def simular_nuevo_vehiculo():
         randint(2007, 2026),
     )
 
+
 if __name__ == "__main__":
+
     ### Completar: Inicializar oficinas
     
 
@@ -39,6 +42,7 @@ if __name__ == "__main__":
 
     ### Registrar vehiculos
     for _ in range(500):
+        pass
         numero_oficina, marca, modelo, anho = simular_nuevo_vehiculo()
 
         # Completar: Registrar vehiculo
