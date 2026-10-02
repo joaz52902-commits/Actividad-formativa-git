@@ -1,5 +1,13 @@
 from collections import deque
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
+import threading
+from eventos_random import (
+    random_tiempo_picado,
+    random_se_quema_plato,
+    random_tiempo_coccion,
+    random_tiempo_emplatado,
+    random_tiempo_extra
+)
 
 from parametros import (
     DURACION_SERVICIO,
@@ -26,7 +34,9 @@ class Pedido:
         return f"Pedido #{self.id_pedido} ({self.plato})"
 
 
-class Cocinero:
+class Cocinero(threading.Thread):
+    lock_cocina = threading.Lock()
+    lock_tiempos = threading.Lock()
     """
     Un cocinero del restaurante. Atiende, de uno en uno, los pedidos que
     tiene asignados en su propia cola.
@@ -41,10 +51,43 @@ class Cocinero:
         """Agrega un pedido al final de su cola. NO MODIFICAR."""
         self.pedidos.append(pedido)
 
-    # COMPLETAR Parte 1
+    def run(self):
+        Cocina.abrir_cocina.wait()
+        while len(self.platos) > 0 and Cocina.abrir_cocina.is_set() == True:
+            pedido = self.pedidos[0]
+            self.pedidos.popleft()
+            with self.lock_tiempos:
+                pedido.inicio = datetime.now()
+
+            tiempo_picando = random_tiempo_picado()
+            time.sleep(tiempo_picando)
+
+            with Cocina.lock_cocina:
+                tiempo_cocinando = random_tiempo_coccion()
+                time.sleep(tiempo_cocinando)
+
+                if random_se_quema_plato:
+                    print("¡Oh no el plato se ha quemado!")
+                    tiempo_arreglando_el_plato = random_tiempo_extra()
+                    time.sleep(tiempo_arreglando_el_plato)
+
+            tiempo_emplatando = random_tiempo_emplatado()
+            time.sleep(tiempo_emplatando)
+
+            with self.lock_tiempos:
+                pedido.entrega = datetime.now()
+        if len(self.pedidos) == 0:
+            print("Termine todos mis pedidos")
+
+        else:
+            print(f"No he podido completar todos mis pedidos, me quedaron {len(self.pedidos)}")
+            
+
+    
 
 
 class Cocina:
+    abrir_cocina = threading.Event()
     """
     Un servicio completo del restaurante, de la apertura al cierre.
     """
