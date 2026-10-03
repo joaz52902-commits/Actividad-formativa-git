@@ -16,7 +16,7 @@ from parametros import (
     NUM_COCINEROS,
     PEDIDOS_POR_COCINERO,
 )
-from utilidades import log
+from utilidades import log, iniciar_cronometro
 
 
 class Pedido:
@@ -56,13 +56,13 @@ class Cocinero(threading.Thread):
         while len(self.platos) > 0 and Cocina.abrir_cocina.is_set() == True:
             pedido = self.pedidos[0]
             self.pedidos.popleft()
-            with self.lock_tiempos:
+            with Cocinero.lock_tiempos:
                 pedido.inicio = datetime.now()
 
             tiempo_picando = random_tiempo_picado()
             time.sleep(tiempo_picando)
 
-            with Cocina.lock_cocina:
+            with Cocinero.lock_cocina:
                 tiempo_cocinando = random_tiempo_coccion()
                 time.sleep(tiempo_cocinando)
 
@@ -74,7 +74,7 @@ class Cocinero(threading.Thread):
             tiempo_emplatando = random_tiempo_emplatado()
             time.sleep(tiempo_emplatando)
 
-            with self.lock_tiempos:
+            with Cocinero.lock_tiempos:
                 pedido.entrega = datetime.now()
         if len(self.pedidos) == 0:
             print("Termine todos mis pedidos")
@@ -133,8 +133,30 @@ class Cocina:
     def cerrar_cocina(self) -> None:
         """Cierra la cocina para nuevos pedidos"""
         log("COCINA", "*** SE CIERRA LA COCINA: no se toman más pedidos ***")
-        # COMPLETAR Parte 2
+        Cocina.abrir_cocina.clear()  
 
     def simular_servicio(self) -> tuple[dict[int, timedelta], list[Pedido]]:
-        # COMPLETAR Parte 2
-        pass
+        pedidos_no_entregados = []
+        dicccionario_tiempos = {}
+        for cocinero in self.cocineros.values():
+            cocinero.start()
+        iniciar_cronometro()
+        print("¡El restaurante ha abierto!")
+        Cocina.abrir_cocina.set()
+
+        time.sleep(20)
+        self.cerrar_cocina()
+
+        for cocinero in self.cocineros.values():
+            cocinero.join()
+
+        for plato in self.pedidos:
+            delta_time = plato.entrega - plato.inicio
+            dicccionario_tiempos[plato.id_pedido] = delta_time
+        for cocinero in self.cocineros.values():
+            for plato in cocinero.pedidos:
+                pedidos_no_entregados.append(plato)
+
+        
+        
+

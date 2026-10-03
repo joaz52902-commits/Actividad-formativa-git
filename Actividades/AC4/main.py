@@ -1,12 +1,10 @@
 from utilidades import imprimir_reporte
-
+from clases import Cocina
 
 
 if __name__ == "__main__":
-    # COMPLETAR Parte 3: instancia la Cocina y guárdala en la variable "cocina".
-    # Luego, simula el servicio y guarda lo que retorna en "resultado".
-    cocina = None
-    resultado = None
+    cocina = Cocina()
+    resultado = cocina.simular_servicio
 
     if resultado is None:
         print("\nsimular_servicio() no retornó nada: debe retornar la tupla "
